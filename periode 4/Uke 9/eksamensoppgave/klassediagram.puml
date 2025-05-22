@@ -1,42 +1,61 @@
 @startuml PacTroll
 
 class Game {
-    window: pg.Surface
-    food_objects: list[Food]
-    obstacles: list[Obstacle]
-    player: Troll
+    + window: pg.Surface
+    + running: bool
+    + food_objects: list[Food]
+    + obstacles: list[Obstacle]
+    + objects: list[GameObject]
+    + player: Troll
+    # clock: pg.Clock
     --
-    run: () -> None
+    # add_food_object: () -> None
+    + quit: () -> None
+    + run: () -> None
+    # handle_events: () -> None
+    # handle_game_events: () -> None
+    # check_overlap: (other: GameObject) -> None
+    # handle_overlap: (other: GameObject) -> None
+    # draw_labels: () -> None
+    # update_frame: () -> None
+    # display_loss: () -> None
 }
 
 Game "1" --* "3" Food
 Game "1" --* "0..*" Obstacle
 Game "1" --* "1" Troll
 
-class Object {
-    x: float
-    y: float
-    width: float
-    height: float
-    color: tuple[float, float, float]
+class GameObject {
+    + x: float
+    + y: float
+    + WIDTH: float
+    + HEIGHT: float
+    + color: tuple[float, float, float]
+    + window: pg.Surface
     --
-    overlaps_with: (other) -> bool
-    draw: () -> None
+    + draw: () -> None
+    + overlaps_with: (other: GameObject) -> bool
 }
 
-class Food extends Object {
+class Food extends GameObject {
     
 }
 
-class Obstacle extends Object {
-    can_kill: bool
+class Obstacle extends GameObject {
+    + can_kill: bool
 }
 
-class Troll extends Object {
-    velocity: float
-    direction: Direction
+class Troll extends GameObject {
+    + velocity: float
+    + direction: Direction
+    # direction_stack: list[Direction]
+    # last_direction: Direction
     --
-    move: (keys_pressed) -> None
+    + move: (keys_pressed) -> None
+    + accelerate: () -> None
+    + add_direction: (direction: Direction) -> None
+    + remove_direction: (direction: Direction) -> None
+    + is_in_bounds: () -> bool
 }
 
 enum Direction {

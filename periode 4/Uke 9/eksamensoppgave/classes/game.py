@@ -38,9 +38,14 @@ class Game:
 
         self.food_objects.append(new_food)
 
+    def quit(self) -> None:
+        """Quits the game and closes the program."""
+        pg.quit()
+        quit()
+
     def run(self) -> None:
         """Acts as the entry point for the game."""
-        self.clock = pg.time.Clock()
+        self._clock = pg.time.Clock()
 
         while self.running:
             # handles input-related events
@@ -66,7 +71,7 @@ class Game:
         for event in pg.event.get():
             match event.type:
                 case pg.QUIT:
-                    self.running = False
+                    self.quit()
                 case pg.KEYDOWN:
                     if event.key in KEY_VALUES:
                         self.player.add_direction(Direction(event.key))
@@ -95,7 +100,7 @@ class Game:
         if not self.player.is_in_bounds():
             self.running = False
 
-    def _check_overlap(self, object) -> None:
+    def _check_overlap(self, object: GameObject) -> None:
         """Checks if the player overlaps with an object, and handles the cases."""
         if self.player.overlaps_with(object):
             self._handle_overlap(object)
@@ -105,11 +110,12 @@ class Game:
             if not object.can_kill:
                 object.can_kill = True
 
-    def _handle_overlap(self, object) -> None:
+    def _handle_overlap(self, object: GameObject) -> None:
         """Handles overlaps."""
         match object:
             case Food():
-                self.obstacles.append(Obstacle(object.x, object.y, self.window))
+                self.obstacles.append(
+                    Obstacle(object.x, object.y, self.window))
                 self.food_objects.remove(object)
                 self._add_food_object()
                 self.player.accelerate()
@@ -131,7 +137,7 @@ class Game:
     def _update_frame(self) -> None:
         """Updates frame so the user can see change."""
         pg.display.flip()
-        self.clock.tick(GAME_FPS)
+        self._clock.tick(GAME_FPS)
 
     def _display_loss(self) -> None:
         """Displays a loss screen after the game is ended."""
@@ -139,8 +145,7 @@ class Game:
             # checks for exits
             for event in pg.event.get():
                 if event.type == pg.QUIT:
-                    pg.quit()
-                    quit()
+                    self.quit()
 
             # adds a loss label
             loss_label = pg.font.SysFont(
